@@ -96,7 +96,7 @@ export default function Chat() {
         Chat with an AI Pathologist for leaf health diagnostics of these{" "}
         <Plants /> Varieties!
       </div>
-      <div className="flex flex-1 w-full flex-col lg:flex-row justify-center items-center text-center  gap-x-5 xl:gap-x-0 space-y-10 ">
+      <div className="flex flex-1 w-full flex-col lg:flex-row  text-center  gap-x-5 xl:gap-x-0 space-y-10 ">
         <div className="w-full flex-col space-y-5 max-w-xs">
           {!imagePrediction && (
             <div className="inline text-xs text-start">
