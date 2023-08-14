@@ -78,11 +78,15 @@ export const ImageDropzone = ({
                   {isDragActive ? (
                     <p className="text-green-500">Drop them here!</p>
                   ) : (
-                    <div className="flex space-x-2">
+                    <div className="w-full flex flex-col space-y-4">
+                    <Button  className="flex space-x-2">
                       {" "}
                       <UploadCloud className="text-sm" />{" "}
-                      <p>Click to select or drag and drop an image</p>
+                      <p>Click to select an image </p> 
+                    </Button>
+                    {' '} or drag and drop an image
                     </div>
+                 
                   )}
                 </>
               )}

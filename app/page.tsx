@@ -54,11 +54,11 @@ export default function Chat() {
 
  
 const getPrediction=async()=> {
-  await new Promise((resolve) => setTimeout(resolve, 100));
+
   setImagePrediction(undefined)
   setIsPredictionLoading(true);
   const Key= await uploadToS3Bucket()
-
+if (!Key) setIsPredictionLoading(false)
   const response: {data: {imageUrl:string}}=await axios.post(`/api/predict`, {Key});
   const url=response.data.imageUrl
   const response_0 = await fetch(url);
@@ -94,7 +94,7 @@ if(prediction && predictionConfidence) {
 
   return (
     <main className="w-full h-full flex flex-col text-center px-4 mt-4 sm:mb-0 mb-8 py-4 lg:px-10 justify-center items-center">
-      <div className="inline w-full max-w-xl mb-2 md:md-5">Chat with an AI Pathologist for Instant Leaf health diagnostics of these <Plants /> Varieties!
+      <div className="inline w-full max-w-xl mb-2 md:md-5">Chat with an AI Pathologist for leaf health diagnostics of these <Plants /> Varieties!
 </div>
 <div className="flex flex-1 w-full flex-col lg:flex-row justify-center items-center text-center  gap-x-5 xl:gap-x-0 space-y-10 ">
 
