@@ -12,7 +12,6 @@ const s3 = new S3({
 export async function POST(req: Request) {
 
     const { Key } = await req.json() 
-    console.log("key", Key)
     const imageUrl = await s3.getSignedUrlPromise("getObject", {
         Bucket: process.env.BUCKET_NAME,
         Key: Key
