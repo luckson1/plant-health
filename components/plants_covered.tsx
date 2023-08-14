@@ -25,7 +25,7 @@ import {
 <div className="space-y-3">
     {plantsAndDiseases.map(p=> (
         <p key={p.plant} className="text-start">
-            <span className="font-bold">{p.plant}: </span>{p.diseases.map(d=> <span> {" "} {" "} {p.diseases.indexOf(d)===p.diseases.length-1? d: `${d},`}  </span>)}
+            <span className="font-bold">{p.plant}: </span>{p.diseases.map(d=> <span key={d}> {" "} {" "} {p.diseases.indexOf(d)===p.diseases.length-1? d: `${d},`}  </span>)}
             </p>
     ))}
 </div>

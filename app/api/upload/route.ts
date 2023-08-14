@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import S3 from "aws-sdk/clients/s3";
 import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
