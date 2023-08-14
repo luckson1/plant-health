@@ -101,7 +101,7 @@ export default function Chat() {
           {!imagePrediction && (
             <div className="inline text-xs text-start">
               {" "}
-              * Upload image of <span className="font-extrabold">
+              * Upload an image of a <span className="font-extrabold">
                 Single
               </span>{" "}
               leaf of any of these <Plants /> only
