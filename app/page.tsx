@@ -134,7 +134,7 @@ export default function Chat() {
                     new RegExp("\\b" + "healthy" + "\\b", "gi"),
                     ""
                   )} leaf`
-                : `There's ${confidence}% this leaf has ${imagePrediction}. Learn more on the disease using our chatbot`}
+                : `There's ${confidence}% chance this leaf has ${imagePrediction}. Learn more on the disease using our chatbot`}
             </p>
           )}
         </div>
