@@ -86,7 +86,7 @@ const id=nanoid()
       setIsPredictionLoading(false);
       setConfidence(Math.round(predictionConfidence * 100));
       const isSickLeaf=!prediction.includes('healthy')
-      if(isSickLeaf) append({content:`Tell me more about ${prediction}`, id, role:'user'})
+      if(isSickLeaf) append({content:`What is ${prediction}, its symptoms, prevention and treatment measures`, id, role:'user'})
     }
     setIsPredictionLoading(false);
   };
@@ -135,7 +135,7 @@ const id=nanoid()
                     new RegExp("\\b" + "healthy" + "\\b", "gi"),
                     ""
                   )} leaf`
-                : `There's ${confidence}% chance this leaf has ${imagePrediction}. Learn more on the disease using our chatbot`}
+                : `There's ${confidence}% chance this leaf has ${imagePrediction}.`}
             </p>
           )}
         </div>
