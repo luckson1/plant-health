@@ -7,16 +7,15 @@ import { Button } from "@/components/ui/button";
 import { IconArrowElbow } from "@/components/ui/icons";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
-import { nanoid } from "@/lib/utils";
 import { useChat } from "ai/react";
 import { useRef, useState } from "react";
-import { S3 } from "aws-sdk";
 import { client } from "@gradio/client";
 import LoadingSVG from "@/components/loading_svg";
 import { Plants } from "@/components/plants_covered";
+import { nanoid } from "@/lib/utils";
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, append } =
     useChat();
   const formRef = useRef<HTMLFormElement>(null);
   const handleKeyDown = (
@@ -76,7 +75,7 @@ export default function Chat() {
       }[];
     };
     const result = (await app.predict("/predict", [exampleImage])) as Result;
-
+const id=nanoid()
     const prediction = result.data[0].label;
     const predictionConfidence = result?.data
       ?.at(0)
@@ -86,6 +85,8 @@ export default function Chat() {
       setImagePrediction(prediction);
       setIsPredictionLoading(false);
       setConfidence(Math.round(predictionConfidence * 100));
+      const isSickLeaf=!prediction.includes('healthy')
+      if(isSickLeaf) append({content:`Tell me more about ${prediction}`, id, role:'user'})
     }
     setIsPredictionLoading(false);
   };
