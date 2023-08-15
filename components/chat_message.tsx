@@ -10,7 +10,7 @@ import { MemoizedReactMarkdown } from '@/components/markdown'
 import { ChatMessageActions } from '@/components/chat_message_actions'
 import { CodeBlock } from './codebloc'
 import {  IconUser } from './ui/icons'
-import { Bot } from 'lucide-react'
+import { LeafyGreen } from 'lucide-react'
 
 export interface ChatMessageProps {
   message: Message
@@ -31,7 +31,7 @@ export function ChatMsg({ message, ...props }: ChatMessageProps) {
             : 'bg-primary text-primary-foreground'
         )}
       >
-        {message.role === 'user' ? <IconUser /> : <Bot />}
+        {message.role === 'user' ? <IconUser /> : <LeafyGreen />}
       </div>
       <div className="flex-1 px-1 ml-4 space-y-2 overflow-hidden">
       <MemoizedReactMarkdown
