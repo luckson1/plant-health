@@ -24,8 +24,14 @@ type Result = {
 };
 const formRef = useRef<HTMLFormElement>(null);
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, append } =
-    useChat();
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    append,
+  } = useChat();
 
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLTextAreaElement>
@@ -62,37 +68,42 @@ export default function Chat() {
   const getPrediction = async () => {
     try {
       setImagePrediction(undefined);
-    setIsPredictionLoading(true);
-    const Key = await uploadToS3Bucket();
-    if (!Key) return
-    const response: { data: { imageUrl: string } } = await axios.post(
-      `/api/predict`,
-      { Key }
-    );
-    const url = response.data.imageUrl;
-    const response_0 = await fetch(url);
-    const exampleImage = await response_0.blob();
+      setIsPredictionLoading(true);
+      const Key = await uploadToS3Bucket();
+      if (!Key) return;
+      const response: { data: { imageUrl: string } } = await axios.post(
+        `/api/predict`,
+        { Key }
+      );
+      const url = response.data.imageUrl;
+      const response_0 = await fetch(url);
+      const exampleImage = await response_0.blob();
 
-    const app = await client("https://jacksonga-plant-disease.hf.space/");
+      const app = await client("https://jacksonga-plant-disease.hf.space/");
 
- 
-    const result = (await app.predict("/predict", [exampleImage])) as Result;
+      const result = (await app.predict("/predict", [exampleImage])) as Result;
 
-    const prediction = result.data[0].label;
-    const predictionConfidence = result?.data
-      ?.at(0)
-      ?.confidences?.at(0)?.confidence;
+      const prediction = result.data[0].label;
+      const predictionConfidence = result?.data
+        ?.at(0)
+        ?.confidences?.at(0)?.confidence;
 
-    if (prediction && predictionConfidence) {
-      setImagePrediction(prediction);
+      if (prediction && predictionConfidence) {
+        setImagePrediction(prediction);
+        setIsPredictionLoading(false);
+        setConfidence(Math.round(predictionConfidence * 100));
+        const isSickLeaf = !prediction.includes("healthy");
+        const id = nanoid();
+        if (isSickLeaf)
+          append({
+            content: `What is ${prediction}, its symptoms, prevention and treatment measures`,
+            id,
+            role: "user",
+          });
+      }
       setIsPredictionLoading(false);
-      setConfidence(Math.round(predictionConfidence * 100));
-      const isSickLeaf=!prediction.includes('healthy')
-      const id=nanoid()
-      if(isSickLeaf) append({content:`What is ${prediction}, its symptoms, prevention and treatment measures`, id, role:'user'})
-    } setIsPredictionLoading(false);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
       setIsPredictionLoading(false);
     }
@@ -109,10 +120,9 @@ export default function Chat() {
           {!imagePrediction && (
             <div className="inline text-xs text-start">
               {" "}
-              * Upload an image of a <span className="font-extrabold">
-                Single
-              </span>{" "}
-              leaf of any of these <Plants /> only
+              * Upload an image of a{" "}
+              <span className="font-extrabold">Single</span> leaf of any of
+              these <Plants /> only
             </div>
           )}
           <ImageDropzone
