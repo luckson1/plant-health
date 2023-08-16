@@ -167,7 +167,7 @@ export default function Chat() {
               value={input}
               placeholder={
                 imagePrediction?.includes("healthy") ||
-                imagePrediction === undefined
+                !imagePrediction
                   ? "Ask me about any plant disease..."
                   : `Ask me about ${imagePrediction}`
               }
