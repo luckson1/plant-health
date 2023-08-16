@@ -13,11 +13,20 @@ import { client } from "@gradio/client";
 import LoadingSVG from "@/components/loading_svg";
 import { Plants } from "@/components/plants_covered";
 import { nanoid } from "@/lib/utils";
-
+type Result = {
+  data: {
+    label: string;
+    confidences: {
+      label: string;
+      confidence: number;
+    }[];
+  }[];
+};
+const formRef = useRef<HTMLFormElement>(null);
 export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, append } =
     useChat();
-  const formRef = useRef<HTMLFormElement>(null);
+
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLTextAreaElement>
   ): void => {
@@ -51,10 +60,11 @@ export default function Chat() {
   };
 
   const getPrediction = async () => {
-    setImagePrediction(undefined);
+    try {
+      setImagePrediction(undefined);
     setIsPredictionLoading(true);
     const Key = await uploadToS3Bucket();
-    if (!Key) setIsPredictionLoading(false);
+    if (!Key) return
     const response: { data: { imageUrl: string } } = await axios.post(
       `/api/predict`,
       { Key }
@@ -65,17 +75,9 @@ export default function Chat() {
 
     const app = await client("https://jacksonga-plant-disease.hf.space/");
 
-    type Result = {
-      data: {
-        label: string;
-        confidences: {
-          label: string;
-          confidence: number;
-        }[];
-      }[];
-    };
+ 
     const result = (await app.predict("/predict", [exampleImage])) as Result;
-const id=nanoid()
+
     const prediction = result.data[0].label;
     const predictionConfidence = result?.data
       ?.at(0)
@@ -86,9 +88,14 @@ const id=nanoid()
       setIsPredictionLoading(false);
       setConfidence(Math.round(predictionConfidence * 100));
       const isSickLeaf=!prediction.includes('healthy')
+      const id=nanoid()
       if(isSickLeaf) append({content:`What is ${prediction}, its symptoms, prevention and treatment measures`, id, role:'user'})
+    } setIsPredictionLoading(false);
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsPredictionLoading(false);
     }
-    setIsPredictionLoading(false);
   };
 
   return (
@@ -146,7 +153,6 @@ const id=nanoid()
           <form onSubmit={handleSubmit} ref={formRef} className="relative ">
             <Textarea
               onKeyDown={handleKeyDown}
-              // className="fixed bottom-0 w-full max-w-md mb-8 "
               className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
               value={input}
               placeholder={
