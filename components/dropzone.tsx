@@ -84,7 +84,7 @@ export const ImageDropzone = ({
                       <UploadCloud className="text-sm" />{" "}
                       <p>Select an image </p> 
                     </Button>
-                    {' '} or drag and drop an image
+               <p>or drag and drop an image</p> 
                     </div>
                  
                   )}
