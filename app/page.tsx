@@ -23,6 +23,16 @@ type Result = {
   }[];
 };
 const formRef = useRef<HTMLFormElement>(null);
+const [images, setImages] = useState<File[] | null>(null);
+const [imagePrediction, setImagePrediction] = useState<string>();
+const [isPredictionLoading, setIsPredictionLoading] = useState(false);
+const [percentageConfidence, setPercentageConfidence] = useState<number>();
+const isHealthyLeaf = imagePrediction
+  ? imagePrediction.includes("healthy")
+  : false;
+const healthyPlantName = imagePrediction
+  ? imagePrediction.replace(new RegExp("\\b" + "healthy" + "\\b", "gi"), "")
+  : "";
 export default function Chat() {
   const {
     messages,
@@ -45,11 +55,6 @@ export default function Chat() {
       event.preventDefault();
     }
   };
-
-  const [images, setImages] = useState<File[] | null>(null);
-  const [imagePrediction, setImagePrediction] = useState<string>();
-  const [isPredictionLoading, setIsPredictionLoading] = useState(false);
-  const [confidence, setConfidence] = useState<number>();
   const uploadToS3Bucket = async () => {
     if (!images) {
       return null;
@@ -64,12 +69,7 @@ export default function Chat() {
 
     return key;
   };
-  const isHealthyLeaf = imagePrediction
-    ? imagePrediction.includes("healthy")
-    : false;
-  const healthyPlantName = imagePrediction
-    ? imagePrediction.replace(new RegExp("\\b" + "healthy" + "\\b", "gi"), "")
-    : "";
+
   const getPrediction = async () => {
     try {
       setImagePrediction(undefined);
@@ -89,14 +89,12 @@ export default function Chat() {
       const result = (await app.predict("/predict", [exampleImage])) as Result;
 
       const prediction = result.data[0].label;
-      const predictionConfidence = result?.data
-        ?.at(0)
-        ?.confidences?.at(0)?.confidence;
+      const confidence = result?.data?.at(0)?.confidences?.at(0)?.confidence;
 
-      if (prediction && predictionConfidence) {
+      if (prediction && confidence) {
         setImagePrediction(prediction);
         setIsPredictionLoading(false);
-        setConfidence(Math.round(predictionConfidence * 100));
+        setPercentageConfidence(Math.round(confidence * 100));
         const isSickLeaf = !prediction.includes("healthy");
         const id = nanoid();
         if (isSickLeaf)
@@ -153,8 +151,12 @@ export default function Chat() {
           {imagePrediction && (
             <p className="text-start">
               {isHealthyLeaf
-                ? `There's ${confidence ?? 'high '}% chance this is a healthy ${healthyPlantName} leaf`
-                : `There's ${confidence ?? "high "}% chance this leaf has ${imagePrediction}.`}
+                ? `There's ${
+                    percentageConfidence ?? "high "
+                  }% chance this is a healthy ${healthyPlantName} leaf`
+                : `There's ${
+                    percentageConfidence ?? "high "
+                  }% chance this leaf has ${imagePrediction}.`}
             </p>
           )}
         </div>
@@ -168,7 +170,7 @@ export default function Chat() {
               className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
               value={input}
               placeholder={
-               isHealthyLeaf || !imagePrediction
+                isHealthyLeaf || !imagePrediction
                   ? "Ask me about any plant disease..."
                   : `Ask me about ${imagePrediction}`
               }
