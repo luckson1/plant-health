@@ -64,7 +64,12 @@ export default function Chat() {
 
     return key;
   };
-
+  const isHealthyLeaf = imagePrediction
+    ? imagePrediction.includes("healthy")
+    : false;
+  const healthyPlantName = imagePrediction
+    ? imagePrediction.replace(new RegExp("\\b" + "healthy" + "\\b", "gi"), "")
+    : "";
   const getPrediction = async () => {
     try {
       setImagePrediction(undefined);
@@ -147,12 +152,9 @@ export default function Chat() {
           </Button>
           {imagePrediction && (
             <p className="text-start">
-              {imagePrediction.includes("healthy")
-                ? `There's ${confidence}% chance this is a healthy ${imagePrediction.replace(
-                    new RegExp("\\b" + "healthy" + "\\b", "gi"),
-                    ""
-                  )} leaf`
-                : `There's ${confidence}% chance this leaf has ${imagePrediction}.`}
+              {isHealthyLeaf
+                ? `There's ${confidence ?? 'high '}% chance this is a healthy ${healthyPlantName} leaf`
+                : `There's ${confidence ?? "high "}% chance this leaf has ${imagePrediction}.`}
             </p>
           )}
         </div>
@@ -166,8 +168,7 @@ export default function Chat() {
               className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
               value={input}
               placeholder={
-                imagePrediction?.includes("healthy") ||
-                !imagePrediction
+               isHealthyLeaf || !imagePrediction
                   ? "Ask me about any plant disease..."
                   : `Ask me about ${imagePrediction}`
               }
