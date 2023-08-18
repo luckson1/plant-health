@@ -51,7 +51,7 @@ export default function Chat() {
       !event.shiftKey &&
       !event.nativeEvent.isComposing
     ) {
-      formRef.current?.requestSubmit();
+      formRef?.current?.requestSubmit();
       event.preventDefault();
     }
   };
