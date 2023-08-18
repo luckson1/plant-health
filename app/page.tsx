@@ -22,7 +22,9 @@ type Result = {
     }[];
   }[];
 };
-const formRef = useRef<HTMLFormElement>(null);
+
+export default function Chat() {
+  const formRef = useRef<HTMLFormElement>(null);
 const [images, setImages] = useState<File[] | null>(null);
 const [imagePrediction, setImagePrediction] = useState<string>();
 const [isPredictionLoading, setIsPredictionLoading] = useState(false);
@@ -33,7 +35,6 @@ const isHealthyLeaf = imagePrediction
 const healthyPlantName = imagePrediction
   ? imagePrediction.replace(new RegExp("\\b" + "healthy" + "\\b", "gi"), "")
   : "";
-export default function Chat() {
   const {
     messages,
     input,

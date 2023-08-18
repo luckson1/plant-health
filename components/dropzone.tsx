@@ -1,3 +1,4 @@
+'use client'
 import { useDropzone } from "react-dropzone";
 import ToolTipComponent from "./tooltip_component";
 import { Button } from "./ui/button";
