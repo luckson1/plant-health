@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const {webpack} = require("next/dist/compiled/webpack/webpack");
 const nextConfig = {
-    appDir:true,
     webpack: (config, {isServer}) => {
         if (!isServer) {
             config.resolve = {
