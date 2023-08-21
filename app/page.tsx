@@ -13,6 +13,7 @@ import { client } from "@gradio/client";
 import LoadingSVG from "@/components/loading_svg";
 import { Plants } from "@/components/plants_covered";
 import { nanoid } from "@/lib/utils";
+import { EmptyScreen } from "@/components/emptyscreen";
 type Result = {
   data: {
     label: string;
@@ -42,6 +43,7 @@ const healthyPlantName = imagePrediction
     handleSubmit,
     isLoading,
     append,
+    setInput
   } = useChat();
 
   const handleKeyDown = (
@@ -114,21 +116,11 @@ const healthyPlantName = imagePrediction
   };
 
   return (
-    <main className="w-full h-full flex flex-col text-center px-4 mt-4 sm:mb-0 mb-8 py-4 lg:px-10 justify-center items-center">
-      <div className="inline w-full max-w-xl mb-2 md:md-5">
-        Chat with an AI Pathologist for leaf health diagnostics of these
-        <Plants />
-      </div>
-      <div className="flex flex-1 w-full flex-col lg:flex-row  text-center  gap-x-5 xl:gap-x-0 space-y-10 ">
-        <div className="w-full flex-col space-y-5 max-w-xs">
-          {!imagePrediction && (
-            <div className="inline text-xs text-start">
-              {" "}
-              * Upload an image of a{" "}
-              <span className="font-extrabold">Single</span> leaf of any of
-              these <Plants /> only
-            </div>
-          )}
+    <main className="w-full h-full flex flex-col text-center px-4 mt-4 sm:mb-0 mb-8 py-10 lg:px-10 justify-center items-center">
+    
+      <div className="flex flex-1 w-full flex-col lg:flex-row  text-center  gap-x-5 xl:gap-x-0 space-y-10 xl:space-y-0 ">
+        <div className="w-full flex-col space-y-5 max-w-xs mx-auto">
+       
           <ImageDropzone
             setImages={setImages}
             images={images}
@@ -162,9 +154,10 @@ const healthyPlantName = imagePrediction
           )}
         </div>
 
-        <div className="flex flex-col w-full max-w-2xl  mx-auto stretch ">
-          <ChatList messages={messages} />
-          <ChatScrollAnchor trackVisibility={isLoading} />
+        <div className="flex flex-col w-full max-w-2xl  mx-auto stretch">
+     { messages.length ? (<>   <ChatList messages={messages} />
+          <ChatScrollAnchor trackVisibility={isLoading} /> </>): (<EmptyScreen setInput={setInput}/>)}
+      
           <form onSubmit={handleSubmit} ref={formRef} className="relative ">
             <Textarea
               onKeyDown={handleKeyDown}
