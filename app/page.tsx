@@ -4,7 +4,7 @@ import { ChatList } from "@/components/chat_list";
 import { ChatScrollAnchor } from "@/components/chat_scorll_anchor";
 import { ImageDropzone } from "@/components/dropzone";
 import { Button } from "@/components/ui/button";
-import { IconArrowElbow } from "@/components/ui/icons";
+import { IconArrowElbow, IconRefresh, IconStop } from "@/components/ui/icons";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { useChat } from "ai/react";
@@ -14,6 +14,7 @@ import LoadingSVG from "@/components/loading_svg";
 import { Plants } from "@/components/plants_covered";
 import { nanoid } from "@/lib/utils";
 import { EmptyScreen } from "@/components/emptyscreen";
+import { ButtonScrollToBottom } from "@/components/button_scroll_to_bottom";
 type Result = {
   data: {
     label: string;
@@ -26,16 +27,16 @@ type Result = {
 
 export default function Chat() {
   const formRef = useRef<HTMLFormElement>(null);
-const [images, setImages] = useState<File[] | null>(null);
-const [imagePrediction, setImagePrediction] = useState<string>();
-const [isPredictionLoading, setIsPredictionLoading] = useState(false);
-const [percentageConfidence, setPercentageConfidence] = useState<number>();
-const isHealthyLeaf = imagePrediction
-  ? imagePrediction.includes("healthy")
-  : false;
-const healthyPlantName = imagePrediction
-  ? imagePrediction.replace(new RegExp("\\b" + "healthy" + "\\b", "gi"), "")
-  : "";
+  const [images, setImages] = useState<File[] | null>(null);
+  const [imagePrediction, setImagePrediction] = useState<string>();
+  const [isPredictionLoading, setIsPredictionLoading] = useState(false);
+  const [percentageConfidence, setPercentageConfidence] = useState<number>();
+  const isHealthyLeaf = imagePrediction
+    ? imagePrediction.includes("healthy")
+    : false;
+  const healthyPlantName = imagePrediction
+    ? imagePrediction.replace(new RegExp("\\b" + "healthy" + "\\b", "gi"), "")
+    : "";
   const {
     messages,
     input,
@@ -43,7 +44,8 @@ const healthyPlantName = imagePrediction
     handleSubmit,
     isLoading,
     append,
-    setInput
+    setInput,
+    reload,
   } = useChat();
 
   const handleKeyDown = (
@@ -117,10 +119,8 @@ const healthyPlantName = imagePrediction
 
   return (
     <main className="w-full h-full flex flex-col text-center px-4 mt-4 sm:mb-0 mb-8 py-10 lg:px-10 justify-center items-center">
-    
       <div className="flex flex-1 w-full flex-col lg:flex-row  text-center  gap-x-5 xl:gap-x-0 space-y-10 xl:space-y-0 ">
         <div className="w-full flex-col space-y-5 max-w-xs mx-auto">
-       
           <ImageDropzone
             setImages={setImages}
             images={images}
@@ -155,32 +155,73 @@ const healthyPlantName = imagePrediction
         </div>
 
         <div className="flex flex-col w-full max-w-2xl  mx-auto stretch">
-     { messages.length ? (<>   <ChatList messages={messages} />
-          <ChatScrollAnchor trackVisibility={isLoading} /> </>): (<EmptyScreen setInput={setInput}/>)}
-      
-          <form onSubmit={handleSubmit} ref={formRef} className="relative ">
-            <Textarea
-              onKeyDown={handleKeyDown}
-              className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
-              value={input}
-              placeholder={
-                isHealthyLeaf || !imagePrediction
-                  ? "Ask me about any plant disease..."
-                  : `Ask me about ${imagePrediction}`
-              }
-              onChange={handleInputChange}
-            />
-            <div className="absolute right-0 top-4 sm:right-4">
-              <Button
-                type="submit"
-                size="icon"
-                disabled={isLoading || input === ""}
-              >
-                <IconArrowElbow />
-                <span className="sr-only">Send message</span>
-              </Button>
+          <>
+            {messages.length ? (
+              <>
+                {" "}
+                <ChatList messages={messages} />
+                <ChatScrollAnchor trackVisibility={isLoading} />{" "}
+              </>
+            ) : (
+              <EmptyScreen setInput={setInput} />
+            )}
+
+            <div className="w-full">
+              <ButtonScrollToBottom />
+              <div className="mx-auto sm:max-w-2xl sm:px-4">
+                <div className="flex h-10 items-center justify-center">
+                  {isLoading ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => stop()}
+                      className="bg-background"
+                    >
+                      <IconStop className="mr-2" />
+                      Stop generating
+                    </Button>
+                  ) : (
+                    messages?.length > 0 && (
+                      <Button
+                        variant="outline"
+                        onClick={() => reload()}
+                        className="bg-background"
+                      >
+                        <IconRefresh className="mr-2" />
+                        Regenerate response
+                      </Button>
+                    )
+                  )}
+                </div>
+                <form
+                  onSubmit={handleSubmit}
+                  ref={formRef}
+                  className="relative "
+                >
+                  <Textarea
+                    onKeyDown={handleKeyDown}
+                    className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
+                    value={input}
+                    placeholder={
+                      isHealthyLeaf || !imagePrediction
+                        ? "Ask me about any plant disease..."
+                        : `Ask me about ${imagePrediction}`
+                    }
+                    onChange={handleInputChange}
+                  />
+                  <div className="absolute right-0 top-4 sm:right-4">
+                    <Button
+                      type="submit"
+                      size="icon"
+                      disabled={isLoading || input === ""}
+                    >
+                      <IconArrowElbow />
+                      <span className="sr-only">Send message</span>
+                    </Button>
+                  </div>
+                </form>
+              </div>
             </div>
-          </form>
+          </>
         </div>
       </div>
     </main>
